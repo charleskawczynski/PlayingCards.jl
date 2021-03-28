@@ -105,11 +105,7 @@ suit(c::Card) = c.suit
 ##### Lists
 #####
 
-const rank_list = (
-    map(i->NumberCard{i}(), 2:10)...,
-    Jack(), Queen(), King(),
-    Ace(),
-)
+const rank_list = (map(i->NumberCard{i}(), 2:10)..., Jack(), Queen(), King(), Ace())
 
 const rank_type_list_rev = typeof.(rank_list[end:-1:1])
 const suit_list = (♣, ♠, ♡, ♢)
