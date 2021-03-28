@@ -1,6 +1,7 @@
 module HoldemCards
 
-using Random
+using Random: randperm
+import Random: shuffle!
 
 import Base
 
