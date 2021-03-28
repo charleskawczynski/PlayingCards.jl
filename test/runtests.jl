@@ -3,10 +3,39 @@ using HoldemCards
 HC = HoldemCards
 
 @testset "Suit" begin
-    @test ♣ == HC.Club()
-    @test ♠ == HC.Spade()
-    @test ♡ == HC.Heart()
-    @test ♢ == HC.Diamond()
+    @test ♣ == Club()
+    @test ♠ == Spade()
+    @test ♡ == Heart()
+    @test ♢ == Diamond()
+end
+
+@testset "Ranks" begin
+    @test NumberCard(1) == NumberCard{1}()
+    for r in 2:10
+        @test value(NumberCard{r}) == low_value(NumberCard{r}) == r
+    end
+    @test value(Jack)  == low_value(Jack) == 11
+    @test value(Queen) == low_value(Queen) == 12
+    @test value(King)  == low_value(King) == 13
+    @test value(Ace) == 14
+    @test low_value(Ace) == 1
+
+    for r in rank_list
+        @test value(r) == value(typeof(r))
+    end
+end
+
+@testset "Card" begin
+    @test rank_type(typeof(J♣)) == Jack
+    @test rank_type(J♣) == Jack
+    @test rank(J♣) == Jack()
+    @test suit(J♣) == Club()
+    @test value(J♣) == value(Jack)
+end
+
+@testset "strings" begin
+    @test sprint(show, 2♣) == "2♣"
+    @test sprint(show, J♣) == "J♣"
     @test string(2♣) == "2♣"
     @test string(J♣) == "J♣"
     @test string(Q♣) == "Q♣"
@@ -16,34 +45,8 @@ HC = HoldemCards
     @test string(♠) == "♠"
     @test string(♡) == "♡"
     @test string(♢) == "♢"
+    @test string(NumberCard{2}()) == "2"
 end
-
-@testset "Ranks" begin
-    for r in 2:10
-        @test value(HC.NumberCard{r}) == low_value(HC.NumberCard{r}) == r
-    end
-    @test value(HC.Jack)  == low_value(HC.Jack) == 11
-    @test value(HC.Queen) == low_value(HC.Queen) == 12
-    @test value(HC.King)  == low_value(HC.King) == 13
-    @test value(HC.Ace) == 14
-    @test low_value(HC.Ace) == 1
-
-    for r in rank_list
-        @test value(r) == value(typeof(r))
-    end
-end
-
-@testset "Card" begin
-    @test HC.rank_type(typeof(J♣)) == HC.Jack
-    @test HC.rank_type(J♣) == HC.Jack
-    @test HC.rank(J♣) == HC.Jack()
-    @test HC.suit(J♣) == HC.Club()
-    @test sprint(show, 2♣) == "2♣"
-    @test sprint(show, J♣) == "J♣"
-
-    @test value(J♣) == value(Jack)
-end
-
 
 @testset "Deck" begin
     deck = OrderedDeck()
