@@ -8,7 +8,7 @@ export NumberCard, Jack, Queen, King, Ace
 export Club, Spade, Heart, Diamond
 export Card, Suit, Rank
 export full_deck
-export suit, value, rank_type
+export suit, value, low_value, rank_type
 export ♣, ♠, ♡, ♢
 
 export rank_list, rank
@@ -113,8 +113,6 @@ const rank_list = (
 
 const rank_type_list_rev = typeof.(rank_list[end:-1:1])
 const suit_list = (♣, ♠, ♡, ♢)
-const FaceCards = (Jack(), Queen(), King(), Ace())
-const FaceCardTypes = Union{typeof.(FaceCards)...}
 const full_deck = [Card(r,s) for r in rank_list for s in suit_list]
 
 #### Deck

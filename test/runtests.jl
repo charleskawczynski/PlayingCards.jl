@@ -12,21 +12,25 @@ HC = HoldemCards
     @test string(Q♣) == "Q♣"
     @test string(K♣) == "K♣"
     @test string(A♣) == "A♣"
+    @test string(♣) == "♣"
+    @test string(♠) == "♠"
+    @test string(♡) == "♡"
+    @test string(♢) == "♢"
 end
 
 @testset "Ranks" begin
     for r in 2:10
-        Tr = typeof(HC.NumberCard(r))
-        @test HC.value(Tr) == HC.low_value(Tr) == r
+        @test value(HC.NumberCard{r}) == low_value(HC.NumberCard{r}) == r
     end
-    r = HC.Jack();  Tr = typeof(r); @test HC.value(Tr) == HC.low_value(Tr) == 11
-    r = HC.Queen(); Tr = typeof(r); @test HC.value(Tr) == HC.low_value(Tr) == 12
-    r = HC.King();  Tr = typeof(r); @test HC.value(Tr) == HC.low_value(Tr) == 13
+    @test value(HC.Jack)  == low_value(HC.Jack) == 11
+    @test value(HC.Queen) == low_value(HC.Queen) == 12
+    @test value(HC.King)  == low_value(HC.King) == 13
+    @test value(HC.Ace) == 14
+    @test low_value(HC.Ace) == 1
 
-    r = HC.Ace()
-    Tr = typeof(r)
-    @test HC.value(Tr) == 14
-    @test HC.low_value(Tr) == 1
+    for r in rank_list
+        @test value(r) == value(typeof(r))
+    end
 end
 
 @testset "Card" begin
@@ -36,6 +40,8 @@ end
     @test HC.suit(J♣) == HC.Club()
     @test sprint(show, 2♣) == "2♣"
     @test sprint(show, J♣) == "J♣"
+
+    @test value(J♣) == value(Jack)
 end
 
 
