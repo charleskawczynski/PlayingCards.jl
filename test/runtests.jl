@@ -20,7 +20,7 @@ end
     @test value(Ace) == 14
     @test low_value(Ace) == 1
 
-    for r in rank_list
+    for r in rank_list()
         @test value(r) == value(typeof(r))
     end
 end
@@ -55,4 +55,5 @@ end
     cards = pop!(deck, 2)
     @test length(cards)==2
     @test length(deck)==50
+    @test length(full_deck())==52
 end

@@ -102,14 +102,13 @@ rank(c::Card) = c.rank
 suit(c::Card) = c.suit
 
 #####
-##### Lists
+##### Full deck/suit/rank methods
 #####
 
-const rank_list = (map(i->NumberCard{i}(), 2:10)..., Jack(), Queen(), King(), Ace())
+rank_list() = (map(i->NumberCard{i}(), 2:10)..., Jack(), Queen(), King(), Ace())
+suit_list() = (♣, ♠, ♡, ♢)
+full_deck() = Card[Card(r,s) for r in rank_list() for s in suit_list()]
 
-const rank_type_list_rev = typeof.(rank_list[end:-1:1])
-const suit_list = (♣, ♠, ♡, ♢)
-const full_deck = [Card(r,s) for r in rank_list for s in suit_list]
 
 #### Deck
 
@@ -120,8 +119,7 @@ end
 Base.length(deck::Deck) = length(deck.cards)
 Base.pop!(deck::Deck, n::Integer) = ntuple(i->pop!(deck.cards), n)
 
-OrderedDeck() =
-    Deck(Card[Card(r,s) for r in rank_list for s in suit_list])
+OrderedDeck() = Deck(full_deck())
 
 function shuffle!(deck::Deck)
     deck.cards .= deck.cards[randperm(length(deck.cards))]
