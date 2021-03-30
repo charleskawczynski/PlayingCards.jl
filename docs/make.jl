@@ -1,4 +1,4 @@
-using Documenter, HoldemCards
+using Documenter, PlayingCards
 
 format = Documenter.HTML(
     prettyurls = !isempty(get(ENV, "CI", "")),
@@ -6,13 +6,13 @@ format = Documenter.HTML(
 )
 
 makedocs(
-    sitename = "HoldemCards.jl",
+    sitename = "PlayingCards.jl",
     strict = true,
     format = format,
     checkdocs = :exports,
     clean = true,
     doctest = true,
-    modules = [HoldemCards],
+    modules = [PlayingCards],
     pages = Any[
         "Home" => "index.md",
         "API" => "api.md",
@@ -20,7 +20,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/charleskawczynski/HoldemCards.jl.git",
+    repo = "github.com/charleskawczynski/PlayingCards.jl.git",
     target = "build",
     push_preview = true,
     devbranch = "main",

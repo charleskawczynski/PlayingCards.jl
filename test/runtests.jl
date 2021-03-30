@@ -1,6 +1,5 @@
 using Test
-using HoldemCards
-HC = HoldemCards
+using PlayingCards
 
 @testset "Suit" begin
     @test ♣ == Club()

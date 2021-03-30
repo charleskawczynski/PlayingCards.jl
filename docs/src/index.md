@@ -1,3 +1,3 @@
-# HoldemCards.jl
+# PlayingCards.jl
 
-A package for Texas hold 'em cards.
+A package for representing playing cards for card games.

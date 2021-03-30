@@ -1,4 +1,4 @@
-module HoldemCards
+module PlayingCards
 
 using Random: randperm
 import Random: shuffle!
