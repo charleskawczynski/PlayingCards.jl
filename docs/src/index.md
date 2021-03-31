@@ -38,6 +38,7 @@ using PlayingCards
 @show high_value(A♢)
 @show high_value(J♣)
 @show low_value(A♡)
+nothing
 ```
 
 ## Decks
