@@ -9,7 +9,7 @@ export NumberCard, Jack, Queen, King, Ace
 export Club, Spade, Heart, Diamond
 export Card, Suit, Rank
 export full_deck
-export suit, value, low_value, rank_type
+export suit, high_value, low_value, rank_type
 export ♣, ♠, ♡, ♢
 
 export ranks, suits, rank
@@ -131,30 +131,30 @@ Base.show(io::IO, card::Card) = print(io, string(card))
 # TODO: define Base.isless ? Problem: high Ace vs. low Ace
 
 """
-    value(::Card)
-    value(::Rank)
+    high_value(::Card)
+    high_value(::Rank)
 
-The rank value. For example:
- - `Ace` -> 14 (takes high value, use [`low_value`](@ref) for low value.)
+The rank high_value. For example:
+ - `Ace` -> 14 (takes high high_value, use [`low_value`](@ref) for low high_value.)
  - `Jack` -> 11
  - `NumberCard{N}` -> N
 """
-value(r::Rank) = value(typeof(r))
-value(::NumberCard{V}) where {V} = V
-value(::Type{NumberCard{N}}) where {N} = N
-value(::Type{Jack}) = 11
-value(::Type{Queen}) = 12
-value(::Type{King}) = 13
-value(::Type{Ace}) = 14
+high_value(r::Rank) = high_value(typeof(r))
+high_value(::NumberCard{V}) where {V} = V
+high_value(::Type{NumberCard{N}}) where {N} = N
+high_value(::Type{Jack}) = 11
+high_value(::Type{Queen}) = 12
+high_value(::Type{King}) = 13
+high_value(::Type{Ace}) = 14
 
 """
     low_value(::Card)
     low_value(::Rank)
 
-The low value of the rank (same as `value` except for
+The low high_value of the rank (same as `high_value` except for
 `Ace` for which `low_value(Card{Ace}) = 1`.
 """
-low_value(::Type{T}) where {T} = value(T)
+low_value(::Type{T}) where {T} = high_value(T)
 low_value(::Type{Ace}) = 1
 low_value(r::Rank) = low_value(typeof(r))
 low_value(card::Card) = low_value(rank(card))
@@ -167,7 +167,7 @@ The type of the `rank`.
 rank_type(::Card{R,S}) where {R,S} = R
 rank_type(::Type{Card{R,S}}) where {R,S} = R
 
-value(c::Card) = value(c.rank)
+high_value(c::Card) = high_value(c.rank)
 
 """
     rank(::Card)

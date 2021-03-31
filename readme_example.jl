@@ -4,8 +4,8 @@ card = A♡
 string(card)
 suit(A♡)
 rank(A♠)
-value(A♢)
-value(J♣)
+high_value(A♢)
+high_value(J♣)
 low_value(A♡)
 
 # Deck

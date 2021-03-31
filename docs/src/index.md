@@ -18,14 +18,14 @@ and a suit:
  - `♡` (`Heart`)
  - `♢` (`Diamond`)
 
-The value of the rank can be retrieved from `value` and `low_value`:
+The high_value of the rank can be retrieved from `high_value` and `low_value`:
 
- - `value(::Card{NumberCard{N}}) where {N} = N`
- - `value(::Card{Jack}) = 11`
- - `value(::Card{Queen}) = 12`
- - `value(::Card{King}) = 13`
- - `value(::Card{Ace}) = 14`, `low_value(::Card{Ace}) = 1`
- - `value(card::Card) = low_value(card)`
+ - `high_value(::Card{NumberCard{N}}) where {N} = N`
+ - `high_value(::Card{Jack}) = 11`
+ - `high_value(::Card{Queen}) = 12`
+ - `high_value(::Card{King}) = 13`
+ - `high_value(::Card{Ace}) = 14`, `low_value(::Card{Ace}) = 1`
+ - `high_value(card::Card) = low_value(card)`
 
 `Card`s have convenience constructors and methods for extracting information about them:
 
@@ -35,8 +35,8 @@ using PlayingCards
 @show string(card)
 @show suit(A♡)
 @show rank(A♠)
-@show value(A♢)
-@show value(J♣)
+@show high_value(A♢)
+@show high_value(J♣)
 @show low_value(A♡)
 ```
 

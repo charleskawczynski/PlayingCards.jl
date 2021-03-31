@@ -41,14 +41,14 @@ and a suit:
  - `♡` (`Heart`)
  - `♢` (`Diamond`)
 
-The value of the rank can be retrieved from `value` and `low_value`:
+The high_value of the rank can be retrieved from `high_value` and `low_value`:
 
- - `value(::Card{NumberCard{N}}) where {N} = N`
- - `value(::Card{Jack}) = 11`
- - `value(::Card{Queen}) = 12`
- - `value(::Card{King}) = 13`
- - `value(::Card{Ace}) = 14`, `low_value(::Card{Ace}) = 1`
- - `value(card::Card) = low_value(card)`
+ - `high_value(::Card{NumberCard{N}}) where {N} = N`
+ - `high_value(::Card{Jack}) = 11`
+ - `high_value(::Card{Queen}) = 12`
+ - `high_value(::Card{King}) = 13`
+ - `high_value(::Card{Ace}) = 14`, `low_value(::Card{Ace}) = 1`
+ - `high_value(card::Card) = low_value(card)`
 
 `Card`s have convenience constructors and methods for extracting information about them:
 
@@ -67,10 +67,10 @@ Heart()
 julia> rank(A♠)
 Ace()
 
-julia> value(A♢)
+julia> high_value(A♢)
 14
 
-julia> value(J♣)
+julia> high_value(J♣)
 11
 
 julia> low_value(A♡)
