@@ -25,7 +25,7 @@
 
 A package for representing playing cards for card games (for a standard deck of fifty two).
 
-## Card
+## Cards
 
 A playing `Card` is consists of a rank:
 
@@ -50,7 +50,7 @@ The value of the rank can be retrieved from `value` and `low_value`:
  - `value(::Card{Ace}) = 14`, `low_value(::Card{Ace}) = 1`
  - `value(card::Card) = low_value(card)`
 
-`Card`s have convenience constructors:
+`Card`s have convenience constructors and methods for extracting information about them:
 
 ```julia
 julia> using PlayingCards
@@ -77,7 +77,9 @@ julia> low_value(A♡)
 1
 ```
 
-## Deck
+## Decks
+
+A `Deck` is a struct with a `Vector` of `Card`s, which has a few convenience methods:
 
 ```julia
 julia> using PlayingCards
