@@ -9,15 +9,16 @@ using PlayingCards
 end
 
 @testset "Ranks" begin
-    @test NumberCard(1) == NumberCard{1}()
-    for r in 2:10
-        @test value(NumberCard{r}) == low_value(NumberCard{r}) == r
+    for v in 2:10
+        @test NumberCard(v) == NumberCard{v}()
+        @test value(NumberCard{v}) == low_value(NumberCard{v}) == v
     end
     @test value(Jack)  == low_value(Jack) == 11
     @test value(Queen) == low_value(Queen) == 12
     @test value(King)  == low_value(King) == 13
     @test value(Ace) == 14
     @test low_value(Ace) == 1
+    @test low_value(A♠) == 1
 
     for r in rank_list()
         @test value(r) == value(typeof(r))
@@ -36,6 +37,7 @@ end
     @test sprint(show, 2♣) == "2♣"
     @test sprint(show, J♣) == "J♣"
     @test string(2♣) == "2♣"
+    @test string(T♣) == "T♣"
     @test string(J♣) == "J♣"
     @test string(Q♣) == "Q♣"
     @test string(K♣) == "K♣"
@@ -48,11 +50,14 @@ end
 end
 
 @testset "Deck" begin
-    deck = OrderedDeck()
+    deck = ordered_deck()
     @test length(deck) == 52
+    @test iterate(deck) == iterate(deck.cards)
     shuffle!(deck)
     cards = pop!(deck, 2)
     @test length(cards)==2
     @test length(deck)==50
     @test length(full_deck())==52
+
+    @test sprint(show, ordered_deck()) == "2♣ 3♣ 4♣ 5♣ 6♣ 7♣ 8♣ 9♣ T♣ J♣ Q♣ K♣ A♣2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ T♠ J♠ Q♠ K♠ A♠2♡ 3♡ 4♡ 5♡ 6♡ 7♡ 8♡ 9♡ T♡ J♡ Q♡ K♡ A♡2♢ 3♢ 4♢ 5♢ 6♢ 7♢ 8♢ 9♢ T♢ J♢ Q♢ K♢ A♢"
 end
