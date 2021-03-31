@@ -25,6 +25,17 @@ end
     end
 end
 
+@testset "Color" begin
+    @test color(J♣) == :black
+    @test color(A♠) == :black
+    @test color(♣) == :black
+    @test color(♠) == :black
+    @test color(J♢) == :red
+    @test color(A♡) == :red
+    @test color(♢) == :red
+    @test color(♡) == :red
+end
+
 @testset "Card" begin
     @test rank_type(typeof(J♣)) == Jack
     @test rank_type(J♣) == Jack

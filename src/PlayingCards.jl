@@ -5,16 +5,24 @@ import Random: shuffle!
 
 import Base
 
+# Ranks
 export NumberCard, Jack, Queen, King, Ace
+
+# Suits
 export Club, Spade, Heart, Diamond
+export ♣, ♠, ♡, ♢ # aliases
+
+# Card, and Suit / Rank
 export Card, Suit, Rank
-export full_deck
-export suit, high_value, low_value, rank_type
-export ♣, ♠, ♡, ♢
 
-export ranks, suits, rank
+# Card properties
+export suit, rank, rank_type, high_value, low_value, color
 
-export Deck, shuffle!, ordered_deck
+# Lists of all ranks / suits
+export ranks, suits
+
+# Deck & deck-related methods
+export Deck, shuffle!, full_deck, ordered_deck
 
 #####
 ##### Types
@@ -32,13 +40,10 @@ card suit (all of which have aliases):
 """
 abstract type Suit end
 
-abstract type RedSuit <: Suit end
-abstract type BlackSuit <: Suit end
-
-struct Club <: BlackSuit end
-struct Spade <: BlackSuit end
-struct Heart <: RedSuit end
-struct Diamond <: RedSuit end
+struct Club <: Suit end
+struct Spade <: Suit end
+struct Heart <: Suit end
+struct Diamond <: Suit end
 
 const ♣ = Club()
 const ♠ = Spade()
@@ -182,6 +187,20 @@ rank(c::Card) = c.rank
 The card `suit` (e.g., `Heart`, `Club`).
 """
 suit(c::Card) = c.suit
+
+"""
+    color(::Card)
+    color(::Suit)
+
+A Symbol (`:red`, or `:black`) indicating
+the color of the suit or card.
+"""
+color(::Type{Club}) = :black
+color(::Type{Spade}) = :black
+color(::Type{Heart}) = :red
+color(::Type{Diamond}) = :red
+color(s::Suit) = color(typeof(s))
+color(card::Card) = color(suit(card))
 
 #####
 ##### Full deck/suit/rank methods

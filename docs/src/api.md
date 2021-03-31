@@ -15,6 +15,7 @@ rank
 rank_type
 high_value
 low_value
+color
 ```
 
 ## Auxiliary methods
