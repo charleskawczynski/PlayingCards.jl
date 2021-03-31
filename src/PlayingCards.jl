@@ -260,7 +260,7 @@ end
 
 Remove `n` cards from the `deck`.
 """
-Base.pop!(deck::Deck, n::Integer) = ntuple(i->pop!(deck.cards), n)
+Base.pop!(deck::Deck, n::Integer = 1) = ntuple(i->pop!(deck.cards), n)
 
 """
     ordered_deck
