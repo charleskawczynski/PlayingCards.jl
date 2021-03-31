@@ -139,8 +139,8 @@ Base.show(io::IO, card::Card) = print(io, string(card))
     high_value(::Card)
     high_value(::Rank)
 
-The rank high_value. For example:
- - `Ace` -> 14 (takes high high_value, use [`low_value`](@ref) for low high_value.)
+The high rank value. For example:
+ - `Ace` -> 14 (use [`low_value`](@ref) for the low value.)
  - `Jack` -> 11
  - `NumberCard{N}` -> N
 """
@@ -156,8 +156,10 @@ high_value(::Type{Ace}) = 14
     low_value(::Card)
     low_value(::Rank)
 
-The low high_value of the rank (same as `high_value` except for
-`Ace` for which `low_value(Card{Ace}) = 1`.
+The low rank value. For example:
+ - `Ace` -> 1 (use [`high_value`](@ref) for the high value.)
+ - `Jack` -> 11
+ - `NumberCard{N}` -> N
 """
 low_value(::Type{T}) where {T} = high_value(T)
 low_value(::Type{Ace}) = 1
@@ -192,7 +194,7 @@ suit(c::Card) = c.suit
     color(::Card)
     color(::Suit)
 
-A Symbol (`:red`, or `:black`) indicating
+A `Symbol` (`:red`, or `:black`) indicating
 the color of the suit or card.
 """
 color(::Type{Club}) = :black
@@ -256,7 +258,7 @@ function Base.show(io::IO, deck::Deck)
 end
 
 """
-    pop!(deck::Deck, n::Int)
+    pop!(deck::Deck, n::Int = 1)
 
 Remove `n` cards from the `deck`.
 """
@@ -272,7 +274,8 @@ ordered_deck() = Deck(full_deck())
 """
     shuffle!
 
-Shuffle the deck!
+Shuffle the deck! `shuffle!` uses
+`Random.randperm` to shuffle the deck.
 """
 function shuffle!(deck::Deck)
     deck.cards .= deck.cards[randperm(length(deck.cards))]

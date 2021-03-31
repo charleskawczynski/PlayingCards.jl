@@ -103,6 +103,8 @@ A♡  7♡  3♢  3♣  7♢  J♠  5♡  4♡  9♢  4♣  3♠  J♣  6♡
 9♡  6♠  T♢  3♡  A♠  8♡  K♡  2♣  4♠  Q♡  9♣
 ```
 
+## Acknowledgements
+
 Some ideas used here were inspired by
  - [@StefanKarpinski](https://github.com/StefanKarpinski)'s [Cards.jl](https://github.com/StefanKarpinski/Cards.jl)
  - [@scheinerman](https://github.com/scheinerman)'s [PlayingCards52.jl](https://github.com/scheinerman/PlayingCards52.jl)
