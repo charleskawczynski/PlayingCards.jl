@@ -23,4 +23,85 @@
 [bors-img]: https://bors.tech/images/badge_small.svg
 [bors-url]: https://app.bors.tech/repositories/32815
 
-A package for representing playing cards for card games.
+A package for representing playing cards for card games (for a standard deck of fifty two).
+
+## Card
+
+A playing `Card` is consists of a rank:
+
+ - `NumberCard(N::Int)` where `2 ≤ N ≤ 10`
+ - `Jack`
+ - `Queen`
+ - `King`
+ - `Ace`
+
+and a suit:
+ - `♣` (`Club`)
+ - `♠` (`Spade`)
+ - `♡` (`Heart`)
+ - `♢` (`Diamond`)
+
+The value of the rank can be retrieved from `value` and `low_value`:
+
+ - `value(::Card{NumberCard{N}}) where {N} = N`
+ - `value(::Card{Jack}) = 11`
+ - `value(::Card{Queen}) = 12`
+ - `value(::Card{King}) = 13`
+ - `value(::Card{Ace}) = 14`, `low_value(::Card{Ace}) = 1`
+ - `value(card::Card) = low_value(card)`
+
+`Card`s have convenience constructors:
+
+```julia
+julia> using PlayingCards
+
+julia> card = A♡
+A♡
+
+julia> string(card)
+"A♡"
+
+julia> suit(A♡)
+Heart()
+
+julia> rank(A♠)
+Ace()
+
+julia> value(A♢)
+14
+
+julia> value(J♣)
+11
+
+julia> low_value(A♡)
+1
+```
+
+## Deck
+
+```julia
+julia> using PlayingCards
+
+julia> deck = ordered_deck()
+2♣  3♣  4♣  5♣  6♣  7♣  8♣  9♣  T♣  J♣  Q♣  K♣  A♣
+2♠  3♠  4♠  5♠  6♠  7♠  8♠  9♠  T♠  J♠  Q♠  K♠  A♠
+2♡  3♡  4♡  5♡  6♡  7♡  8♡  9♡  T♡  J♡  Q♡  K♡  A♡
+2♢  3♢  4♢  5♢  6♢  7♢  8♢  9♢  T♢  J♢  Q♢  K♢  A♢
+
+
+julia> shuffle!(deck)
+
+julia> hand = pop!(deck, 2)
+(5♣, 8♢)
+
+julia> deck
+Q♣  T♣  5♢  K♠  J♢  4♢  T♡  K♢  2♠  5♠  2♡  8♣  8♠
+K♣  T♠  A♣  Q♠  Q♢  2♢  7♣  6♣  J♡  9♠  6♢  A♢  7♠
+A♡  7♡  3♢  3♣  7♢  J♠  5♡  4♡  9♢  4♣  3♠  J♣  6♡
+9♡  6♠  T♢  3♡  A♠  8♡  K♡  2♣  4♠  Q♡  9♣
+```
+
+Some ideas used here were inspired by
+ - [@StefanKarpinski](https://github.com/StefanKarpinski)'s [Cards.jl](https://github.com/StefanKarpinski/Cards.jl)
+ - [@scheinerman](https://github.com/scheinerman)'s [PlayingCards52.jl](https://github.com/scheinerman/PlayingCards52.jl)
+

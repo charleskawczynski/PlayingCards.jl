@@ -14,31 +14,76 @@ export ♣, ♠, ♡, ♢
 
 export rank_list, suit_list, rank
 
-export Deck, shuffle!, OrderedDeck
+export Deck, shuffle!, ordered_deck
 
 #####
 ##### Types
 #####
 
+"""
+    Suit
+
+Subtypes are used for each
+card suit (all of which have aliases):
+ - `Club`    (alias `♣`)
+ - `Spade`   (alias `♠`)
+ - `Heart`   (alias `♡`)
+ - `Diamond` (alias `♢`)
+"""
 abstract type Suit end
-struct Club <: Suit end
-struct Spade <: Suit end
-struct Heart <: Suit end
-struct Diamond <: Suit end
+
+abstract type RedSuit <: Suit end
+abstract type BlackSuit <: Suit end
+
+struct Club <: BlackSuit end
+struct Spade <: BlackSuit end
+struct Heart <: RedSuit end
+struct Diamond <: RedSuit end
 
 const ♣ = Club()
 const ♠ = Spade()
 const ♡ = Heart()
 const ♢ = Diamond()
 
+"""
+    Rank
+
+The card rank, subtypes are used
+for each card rank including
+ - `Ace`
+ - `King`
+ - `Queen`
+ - `Jack`
+ - `NumberCard{N}` where `2 ≤ N ≤ 10`
+"""
 abstract type Rank end
+
 struct NumberCard{N} <: Rank end
+function NumberCard(N::Int)
+    @assert 2 ≤ N ≤ 10
+    return NumberCard{N}()
+end
+
 struct Jack <: Rank end
 struct Queen <: Rank end
 struct King <: Rank end
 struct Ace <: Rank end
-NumberCard(n::Int) = NumberCard{n}()
 
+"""
+    Card{R <: Rank, S <: Suit}
+
+A playing card. Can be constructed with
+
+`Card(rank, suit)`, or by convenience
+constructors. For example:
+ - `2♢` (equivalent to `Card(NumberCard(2), Diamond())`)
+ - `A♡` (equivalent to `Card(Ace, Heart())`)
+
+A `10`-`suit` can be constructed with one of two constructors:
+ - `10♣` (equivalent to `Card(NumberCard(10), Club())`)
+or
+ - `T♠`  (equivalent to `Card(NumberCard(10), Spade())`)
+"""
 struct Card{R <: Rank, S <: Suit}
     rank::R
     suit::S
@@ -69,8 +114,9 @@ Base.string(::Spade) = "♠"
 Base.string(::Heart) = "♡"
 Base.string(::Diamond) = "♢"
 
-Base.string(card::Card) = string(value(card.rank))*string(card.suit)
+Base.string(card::Card) = string(card.rank)*string(card.suit)
 Base.string(r::NumberCard{N}) where {N}  = "$N"
+Base.string(r::NumberCard{10}) = "T"
 Base.string(r::Jack)  = "J"
 Base.string(r::Queen) = "Q"
 Base.string(r::King)  = "K"
@@ -84,6 +130,15 @@ Base.show(io::IO, card::Card) = print(io, string(card))
 
 # TODO: define Base.isless ? Problem: high Ace vs. low Ace
 
+"""
+    value(::Card)
+    value(::Rank)
+
+The rank value. For example:
+ - `Ace` -> 14 (takes high value, use [`low_value`](@ref) for low value.)
+ - `Jack` -> 11
+ - `NumberCard{N}` -> N
+"""
 value(r::Rank) = value(typeof(r))
 value(::NumberCard{V}) where {V} = V
 value(::Type{NumberCard{N}}) where {N} = N
@@ -92,36 +147,115 @@ value(::Type{Queen}) = 12
 value(::Type{King}) = 13
 value(::Type{Ace}) = 14
 
+"""
+    value(::Card)
+    value(::Rank)
+
+The rank value. For example:
+ - `Ace` -> 14
+ - `Ace` -> 14
+"""
 low_value(::Type{T}) where {T} = value(T)
 low_value(::Type{Ace}) = 1
+low_value(r::Rank) = low_value(typeof(r))
+low_value(card::Card) = low_value(rank(card))
 
+"""
+    rank_type(::Card)
+
+The type of the `rank`.
+"""
 rank_type(::Card{R,S}) where {R,S} = R
 rank_type(::Type{Card{R,S}}) where {R,S} = R
 
 value(c::Card) = value(c.rank)
+
+"""
+    rank(::Card)
+
+The card `rank` (e.g., `Ace`, `Jack`, `NumberCard{N}`).
+"""
 rank(c::Card) = c.rank
+
+"""
+    suit(::Card)
+
+The card `suit` (e.g., `Heart`, `Club`).
+"""
 suit(c::Card) = c.suit
 
 #####
 ##### Full deck/suit/rank methods
 #####
 
+"""
+    rank_list
+
+A Tuple of all ranks.
+"""
 rank_list() = (map(i->NumberCard{i}(), 2:10)..., Jack(), Queen(), King(), Ace())
+
+"""
+    suit_list
+
+A Tuple of all suits
+"""
 suit_list() = (♣, ♠, ♡, ♢)
-full_deck() = Card[Card(r,s) for r in rank_list() for s in suit_list()]
+
+"""
+    full_deck
+
+A vector of a cards
+containing a full deck
+"""
+full_deck() = Card[Card(r,s) for s in suit_list() for r in rank_list()]
 
 
 #### Deck
 
+"""
+    Deck
+
+Deck of cards (backed by a `Vector{Card}`)
+"""
 struct Deck{C <: Vector}
     cards::C
 end
 
 Base.length(deck::Deck) = length(deck.cards)
+
+Base.iterate(deck::Deck, state=1) = Base.iterate(deck.cards, state)
+
+function Base.show(io::IO, deck::Deck)
+    for (i, card) in enumerate(deck)
+        Base.show(io, card)
+        if mod(i, 13) == 0
+            println()
+        else
+            print(io, " ")
+        end
+    end
+end
+
+"""
+    pop!(deck::Deck, n::Int)
+
+Remove `n` cards from the `deck`.
+"""
 Base.pop!(deck::Deck, n::Integer) = ntuple(i->pop!(deck.cards), n)
 
-OrderedDeck() = Deck(full_deck())
+"""
+    ordered_deck
 
+An ordered `Deck` of cards.
+"""
+ordered_deck() = Deck(full_deck())
+
+"""
+    shuffle!
+
+Shuffle the deck!
+"""
 function shuffle!(deck::Deck)
     deck.cards .= deck.cards[randperm(length(deck.cards))]
     nothing
