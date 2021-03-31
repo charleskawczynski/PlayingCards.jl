@@ -11,18 +11,29 @@ end
 @testset "Ranks" begin
     for v in 2:10
         @test NumberCard(v) == NumberCard{v}()
-        @test value(NumberCard{v}) == low_value(NumberCard{v}) == v
+        @test high_value(NumberCard{v}) == low_value(NumberCard{v}) == v
     end
-    @test value(Jack)  == low_value(Jack) == 11
-    @test value(Queen) == low_value(Queen) == 12
-    @test value(King)  == low_value(King) == 13
-    @test value(Ace) == 14
+    @test high_value(Jack)  == low_value(Jack) == 11
+    @test high_value(Queen) == low_value(Queen) == 12
+    @test high_value(King)  == low_value(King) == 13
+    @test high_value(Ace) == 14
     @test low_value(Ace) == 1
     @test low_value(A♠) == 1
 
     for r in ranks()
-        @test value(r) == value(typeof(r))
+        @test high_value(r) == high_value(typeof(r))
     end
+end
+
+@testset "Color" begin
+    @test color(J♣) == :black
+    @test color(A♠) == :black
+    @test color(♣) == :black
+    @test color(♠) == :black
+    @test color(J♢) == :red
+    @test color(A♡) == :red
+    @test color(♢) == :red
+    @test color(♡) == :red
 end
 
 @testset "Card" begin
@@ -30,7 +41,7 @@ end
     @test rank_type(J♣) == Jack
     @test rank(J♣) == Jack()
     @test suit(J♣) == Club()
-    @test value(J♣) == value(Jack)
+    @test high_value(J♣) == high_value(Jack)
 end
 
 @testset "strings" begin

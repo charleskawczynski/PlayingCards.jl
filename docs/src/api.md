@@ -13,8 +13,9 @@ Card
 suit
 rank
 rank_type
-value
+high_value
 low_value
+color
 ```
 
 ## Auxiliary methods
