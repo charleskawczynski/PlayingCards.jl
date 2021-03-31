@@ -21,8 +21,8 @@ low_value
 
 ```@docs
 full_deck
-rank_list
-suit_list
+ranks
+suits
 ```
 
 ## Deck

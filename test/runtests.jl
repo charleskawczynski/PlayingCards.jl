@@ -20,7 +20,7 @@ end
     @test low_value(Ace) == 1
     @test low_value(A♠) == 1
 
-    for r in rank_list()
+    for r in ranks()
         @test value(r) == value(typeof(r))
     end
 end
@@ -59,5 +59,10 @@ end
     @test length(deck)==50
     @test length(full_deck())==52
 
-    @test sprint(show, ordered_deck()) == "2♣ 3♣ 4♣ 5♣ 6♣ 7♣ 8♣ 9♣ T♣ J♣ Q♣ K♣ A♣2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ T♠ J♠ Q♠ K♠ A♠2♡ 3♡ 4♡ 5♡ 6♡ 7♡ 8♡ 9♡ T♡ J♡ Q♡ K♡ A♡2♢ 3♢ 4♢ 5♢ 6♢ 7♢ 8♢ 9♢ T♢ J♢ Q♢ K♢ A♢"
+    s="2♣ 3♣ 4♣ 5♣ 6♣ 7♣ 8♣ 9♣ T♣ J♣ Q♣ K♣ A♣
+2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ T♠ J♠ Q♠ K♠ A♠
+2♡ 3♡ 4♡ 5♡ 6♡ 7♡ 8♡ 9♡ T♡ J♡ Q♡ K♡ A♡
+2♢ 3♢ 4♢ 5♢ 6♢ 7♢ 8♢ 9♢ T♢ J♢ Q♢ K♢ A♢
+"
+    @test sprint(show, ordered_deck()) == s
 end

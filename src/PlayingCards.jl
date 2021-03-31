@@ -12,7 +12,7 @@ export full_deck
 export suit, value, low_value, rank_type
 export ♣, ♠, ♡, ♢
 
-export rank_list, suit_list, rank
+export ranks, suits, rank
 
 export Deck, shuffle!, ordered_deck
 
@@ -148,12 +148,11 @@ value(::Type{King}) = 13
 value(::Type{Ace}) = 14
 
 """
-    value(::Card)
-    value(::Rank)
+    low_value(::Card)
+    low_value(::Rank)
 
-The rank value. For example:
- - `Ace` -> 14
- - `Ace` -> 14
+The low value of the rank (same as `value` except for
+`Ace` for which `low_value(Card{Ace}) = 1`.
 """
 low_value(::Type{T}) where {T} = value(T)
 low_value(::Type{Ace}) = 1
@@ -189,18 +188,18 @@ suit(c::Card) = c.suit
 #####
 
 """
-    rank_list
+    ranks
 
 A Tuple of all ranks.
 """
-rank_list() = (map(i->NumberCard{i}(), 2:10)..., Jack(), Queen(), King(), Ace())
+ranks() = (map(i->NumberCard{i}(), 2:10)..., Jack(), Queen(), King(), Ace())
 
 """
-    suit_list
+    suits
 
 A Tuple of all suits
 """
-suit_list() = (♣, ♠, ♡, ♢)
+suits() = (♣, ♠, ♡, ♢)
 
 """
     full_deck
@@ -208,7 +207,7 @@ suit_list() = (♣, ♠, ♡, ♢)
 A vector of a cards
 containing a full deck
 """
-full_deck() = Card[Card(r,s) for s in suit_list() for r in rank_list()]
+full_deck() = Card[Card(r,s) for s in suits() for r in ranks()]
 
 
 #### Deck
@@ -230,7 +229,7 @@ function Base.show(io::IO, deck::Deck)
     for (i, card) in enumerate(deck)
         Base.show(io, card)
         if mod(i, 13) == 0
-            println()
+            println(io)
         else
             print(io, " ")
         end
