@@ -5,15 +5,12 @@ import Random: shuffle!
 
 import Base
 
-# Ranks
-export NumberCard, Jack, Queen, King, Ace
-
 # Suits
 export Club, Spade, Heart, Diamond
 export ♣, ♠, ♡, ♢ # aliases
 
-# Card, and Suit / Rank
-export Card, Suit, Rank
+# Card, and Suit
+export Card, Suit
 
 # Card properties
 export suit, rank, rank_type, high_value, low_value, color
@@ -51,63 +48,47 @@ const ♡ = Heart()
 const ♢ = Diamond()
 
 """
-    Rank
-
-The card rank, subtypes are used
-for each card rank including
- - `Ace`
- - `King`
- - `Queen`
- - `Jack`
- - `NumberCard{N}` where `2 ≤ N ≤ 10`
-"""
-abstract type Rank end
-
-struct NumberCard{N} <: Rank end
-function NumberCard(N::Int)
-    @assert 2 ≤ N ≤ 10
-    return NumberCard{N}()
-end
-
-struct Jack <: Rank end
-struct Queen <: Rank end
-struct King <: Rank end
-struct Ace <: Rank end
-
-"""
-    Card{R <: Rank, S <: Suit}
+    Card{S <: Suit, R <: Rank}
 
 A playing card. Can be constructed with
 
-`Card(rank, suit)`, or by convenience
+`Card(suit, rank)`, or by convenience
 constructors. For example:
- - `2♢` (equivalent to `Card(NumberCard(2), Diamond())`)
- - `A♡` (equivalent to `Card(Ace, Heart())`)
+ - `2♢` (equivalent to `Card(2, Diamond())`)
+ - `A♡` (equivalent to `Card(1, Heart())`)
 
 A `10`-`suit` can be constructed with one of two constructors:
- - `10♣` (equivalent to `Card(NumberCard(10), Club())`)
+ - `10♣` (equivalent to `Card(10, Club())`)
 or
- - `T♠`  (equivalent to `Card(NumberCard(10), Spade())`)
+ - `T♠`  (equivalent to `Card(10, Spade())`)
 """
-struct Card{R <: Rank, S <: Suit}
-    rank::R
-    suit::S
+struct Card{S <: Suit}
+    rank::UInt8
+    # Support either order input:
+    function Card(rank::Int, ::S) where {S<:Suit}
+        @assert 1 ≤ rank ≤ 13
+        new{S}(UInt8(rank))
+    end
+    function Card(::S, rank::Int) where {S<:Suit}
+        @assert 1 ≤ rank ≤ 13
+        new{S}(UInt8(rank))
+    end
 end
 
 # Allow constructing cards with, e.g., `3♡`
-Base.:*(r::Integer, s::Suit) = Card(NumberCard{r}(), s)
+Base.:*(r::Integer, s::Suit) = Card(s, r)
 
 # And for face cards:
 # Not to be confused with
 # ♡, ♡
 # ♢, ♢
-for s in "♣♢♡♠", (f,typ) in zip((:J,:Q,:K,:A),(Jack(),Queen(),King(),Ace()))
+for s in "♣♢♡♠", (f,typ) in zip((:J,:Q,:K,:A),(11,12,13,1))
     ss, sc = Symbol(s), Symbol("$f$s")
     @eval (export $sc; const $sc = Card($typ,$ss))
 end
 for s in "♣♢♡♠"
     ss, sc = Symbol(s), Symbol("T$s")
-    @eval (export $sc; const $sc = Card(NumberCard{10}(),$ss))
+    @eval (export $sc; const $sc = Card(10,$ss))
 end
 
 #####
@@ -118,18 +99,23 @@ Base.string(::Club) = "♣"
 Base.string(::Spade) = "♠"
 Base.string(::Heart) = "♡"
 Base.string(::Diamond) = "♢"
+Base.string(::Type{Club}) = "♣"
+Base.string(::Type{Spade}) = "♠"
+Base.string(::Type{Heart}) = "♡"
+Base.string(::Type{Diamond}) = "♢"
 
-Base.string(card::Card) = string(card.rank)*string(card.suit)
-Base.string(r::NumberCard{N}) where {N}  = "$N"
-Base.string(r::NumberCard{10}) = "T"
-Base.string(r::Jack)  = "J"
-Base.string(r::Queen) = "Q"
-Base.string(r::King)  = "K"
-Base.string(r::Ace)   = "A"
-Base.string(card::Card{Jack})  = string(card.rank)*string(card.suit)
-Base.string(card::Card{Queen}) = string(card.rank)*string(card.suit)
-Base.string(card::Card{King})  = string(card.rank)*string(card.suit)
-Base.string(card::Card{Ace})   = string(card.rank)*string(card.suit)
+function rank_string(r::UInt8)
+    2 ≤ r ≤ 9 && return "$(r)"
+    r == 10 && return "T"
+    r == 11 && return "J"
+    r == 12 && return "Q"
+    r == 13 && return "K"
+    r == 1 && return "A"
+    error("Unrecognized rank string")
+end
+
+suit_type(card::Card{S}) where {S} = string(S)
+Base.string(card::Card) = rank_string(card.rank)*string(suit_type(card))
 
 Base.show(io::IO, card::Card) = print(io, string(card))
 
@@ -140,46 +126,25 @@ Base.show(io::IO, card::Card) = print(io, string(card))
     high_value(::Rank)
 
 The high rank value. For example:
- - `Ace` -> 14 (use [`low_value`](@ref) for the low value.)
- - `Jack` -> 11
- - `NumberCard{N}` -> N
+ - `Rank(1)` -> 14 (use [`low_value`](@ref) for the low Ace value.)
+ - `Rank(5)` -> 5
 """
-high_value(r::Rank) = high_value(typeof(r))
-high_value(::NumberCard{V}) where {V} = V
-high_value(::Type{NumberCard{N}}) where {N} = N
-high_value(::Type{Jack}) = 11
-high_value(::Type{Queen}) = 12
-high_value(::Type{King}) = 13
-high_value(::Type{Ace}) = 14
+high_value(c::Card) = c.rank == 1 ? 14 : c.rank
 
 """
     low_value(::Card)
     low_value(::Rank)
 
 The low rank value. For example:
- - `Ace` -> 1 (use [`high_value`](@ref) for the high value.)
- - `Jack` -> 11
- - `NumberCard{N}` -> N
+ - `Rank(1)` -> 1 (use [`high_value`](@ref) for the high Ace value.)
+ - `Rank(5)` -> 5
 """
-low_value(::Type{T}) where {T} = high_value(T)
-low_value(::Type{Ace}) = 1
-low_value(r::Rank) = low_value(typeof(r))
-low_value(card::Card) = low_value(rank(card))
-
-"""
-    rank_type(::Card)
-
-The type of the `rank`.
-"""
-rank_type(::Card{R,S}) where {R,S} = R
-rank_type(::Type{Card{R,S}}) where {R,S} = R
-
-high_value(c::Card) = high_value(c.rank)
+low_value(c::Card) = c.rank
 
 """
     rank(::Card)
 
-The card `rank` (e.g., `Ace`, `Jack`, `NumberCard{N}`).
+The card `rank` (e.g., `Ace`, `Rank`).
 """
 rank(c::Card) = c.rank
 
@@ -188,7 +153,7 @@ rank(c::Card) = c.rank
 
 The card `suit` (e.g., `Heart`, `Club`).
 """
-suit(c::Card) = c.suit
+suit(c::Card{S}) where {S} = S()
 
 """
     color(::Card)
@@ -201,8 +166,8 @@ color(::Type{Club}) = :black
 color(::Type{Spade}) = :black
 color(::Type{Heart}) = :red
 color(::Type{Diamond}) = :red
-color(s::Suit) = color(typeof(s))
-color(card::Card) = color(suit(card))
+color(suit::Suit) = color(typeof(suit))
+color(card::Card{S}) where {S} = color(S)
 
 #####
 ##### Full deck/suit/rank methods
@@ -211,9 +176,9 @@ color(card::Card) = color(suit(card))
 """
     ranks
 
-A Tuple of all ranks.
+A Tuple of ranks `1:13`.
 """
-ranks() = (map(i->NumberCard{i}(), 2:10)..., Jack(), Queen(), King(), Ace())
+ranks() = 1:13
 
 """
     suits

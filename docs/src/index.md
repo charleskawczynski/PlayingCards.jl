@@ -6,11 +6,11 @@ A package for representing playing cards for card games (for a standard deck of 
 
 A playing `Card` is consists of a rank:
 
- - `NumberCard(N::Int)` where `2 ≤ N ≤ 10`
- - `Jack`
- - `Queen`
- - `King`
- - `Ace`
+ - `Rank(N::Int)` where `1 ≤ N ≤ 13` where
+ - `N = 1` represents an Ace (which can have high or low values via `high_value` and `low_value`)
+ - `N = 11` represents a Jack
+ - `N = 12` represents a Queen
+ - `N = 13` represents a King
 
 and a suit:
  - `♣` (`Club`)
@@ -18,14 +18,11 @@ and a suit:
  - `♡` (`Heart`)
  - `♢` (`Diamond`)
 
-The high_value of the rank can be retrieved from `high_value` and `low_value`:
+The value of the rank can be retrieved from `high_value` and `low_value`:
 
- - `high_value(::Card{NumberCard{N}}) where {N} = N`
- - `high_value(::Card{Jack}) = 11`
- - `high_value(::Card{Queen}) = 12`
- - `high_value(::Card{King}) = 13`
- - `high_value(::Card{Ace}) = 14`, `low_value(::Card{Ace}) = 1`
- - `high_value(card::Card) = low_value(card)`
+ - `high_value(c::Card) == low_value(c::Card) == c.rank`
+ - `high_value(::Card) = 14` for Ace
+ - `low_value(::Card) = 1` for Ace
 
 `Card`s have convenience constructors and methods for extracting information about them:
 
