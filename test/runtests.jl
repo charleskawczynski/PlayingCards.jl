@@ -1,5 +1,6 @@
 using Test
 using PlayingCards
+using PlayingCards: rank_string
 
 @testset "Suit" begin
     @test ♣ == Club()
@@ -9,20 +10,11 @@ using PlayingCards
 end
 
 @testset "Ranks" begin
-    for v in 2:10
-        @test NumberCard(v) == NumberCard{v}()
-        @test high_value(NumberCard{v}) == low_value(NumberCard{v}) == v
+    for v in ranks()
+        v==1 && continue
+        @test high_value(v*♣) == low_value(v*♣) == v
     end
-    @test high_value(Jack)  == low_value(Jack) == 11
-    @test high_value(Queen) == low_value(Queen) == 12
-    @test high_value(King)  == low_value(King) == 13
-    @test high_value(Ace) == 14
-    @test low_value(Ace) == 1
-    @test low_value(A♠) == 1
-
-    for r in ranks()
-        @test high_value(r) == high_value(typeof(r))
-    end
+    @test low_value(1*♣) == 1
 end
 
 @testset "Color" begin
@@ -37,11 +29,10 @@ end
 end
 
 @testset "Card" begin
-    @test rank_type(typeof(J♣)) == Jack
-    @test rank_type(J♣) == Jack
-    @test rank(J♣) == Jack()
+    @test rank(J♣) == 11
     @test suit(J♣) == Club()
-    @test high_value(J♣) == high_value(Jack)
+    @test_throws AssertionError 14*♣
+    @test_throws AssertionError 0*♣
 end
 
 @testset "strings" begin
@@ -57,7 +48,7 @@ end
     @test string(♠) == "♠"
     @test string(♡) == "♡"
     @test string(♢) == "♢"
-    @test string(NumberCard{2}()) == "2"
+    @test_throws ErrorException rank_string(UInt8(0))
 end
 
 @testset "Deck" begin
@@ -70,10 +61,10 @@ end
     @test length(deck)==50
     @test length(full_deck())==52
 
-    s="2♣ 3♣ 4♣ 5♣ 6♣ 7♣ 8♣ 9♣ T♣ J♣ Q♣ K♣ A♣
-2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ T♠ J♠ Q♠ K♠ A♠
-2♡ 3♡ 4♡ 5♡ 6♡ 7♡ 8♡ 9♡ T♡ J♡ Q♡ K♡ A♡
-2♢ 3♢ 4♢ 5♢ 6♢ 7♢ 8♢ 9♢ T♢ J♢ Q♢ K♢ A♢
+    s="A♣ 2♣ 3♣ 4♣ 5♣ 6♣ 7♣ 8♣ 9♣ T♣ J♣ Q♣ K♣
+A♠ 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ T♠ J♠ Q♠ K♠
+A♡ 2♡ 3♡ 4♡ 5♡ 6♡ 7♡ 8♡ 9♡ T♡ J♡ Q♡ K♡
+A♢ 2♢ 3♢ 4♢ 5♢ 6♢ 7♢ 8♢ 9♢ T♢ J♢ Q♢ K♢
 "
     @test sprint(show, ordered_deck()) == s
 end
