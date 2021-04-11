@@ -30,5 +30,14 @@ suits
 Deck
 ordered_deck
 pop!
+```
+## Shuffling
+
+```@docs
 shuffle!
+shuffle
+riffle!
+riffle
+cut
+cut!
 ```

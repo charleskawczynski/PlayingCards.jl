@@ -4,41 +4,47 @@ import Random: shuffle!, shuffle
 export shuffle!, shuffle
 export riffle, riffle!, cut, cut!
 
-Base.sort!(deck::Deck; kwargs...) = sort!(deck.cards; kwargs...,
+Base.sort!(deck::Deck; value = low_value, kwargs...) = sort!(deck.cards; kwargs...,
     by = x->begin
         ClubVal = 100*(suit(x) isa Club)
         SpadeVal = 1000*(suit(x) isa Spade)
         HeartVal = 10000*(suit(x) isa Heart)
         DiamondVal = 100000*(suit(x) isa Diamond)
-        val = high_value(x)+ClubVal+HeartVal+SpadeVal+DiamondVal
+        val = value(x)+ClubVal+HeartVal+SpadeVal+DiamondVal
         val
     end)
 
-Base.sort(deck::Deck; kwargs...) = sort(deck.cards; kwargs...,
+Base.sort(deck::Deck; value = low_value, kwargs...) = sort(deck.cards; kwargs...,
     by = x->begin
         ClubVal = 100*(suit(x) isa Club)
         SpadeVal = 1000*(suit(x) isa Spade)
         HeartVal = 10000*(suit(x) isa Heart)
         DiamondVal = 100000*(suit(x) isa Diamond)
-        val = high_value(x)+ClubVal+HeartVal+SpadeVal+DiamondVal
+        val = value(x)+ClubVal+HeartVal+SpadeVal+DiamondVal
         val
     end)
 
 """
-    shuffle!(cards::Vector)
     shuffle!(deck::Deck)
 
-Shuffle the deck! `shuffle!` uses
+Shuffle the deck. `shuffle!` uses
 `Random.randperm` to shuffle the deck.
 """
-function shuffle!(cards::Vector)
-    cards .= cards[randperm(length(cards))]
+function shuffle!(deck::Deck)
+    deck.cards .= deck.cards[randperm(length(deck.cards))]
     nothing
 end
 shuffle!(deck::Deck) = shuffle!(deck.cards)
 
 """
-    riffle!(cards::Vector)
+    shuffle(deck::Deck)
+
+Returns a shuffled deck, without
+modifying the input deck.
+"""
+shuffle(deck::Deck) = shuffle(deck.cards)
+
+"""
     riffle!(deck::Deck)
 
 Performs a riffle shuffle on the elements of
@@ -98,20 +104,6 @@ end
 
 simple_binomial(n::Int) = sum(rand() > 0.5 for _ = 1:n)
 
-"""
-    cut(cards, c = simple_binomial(length(cards)))
-
-Performs a "cut" on `cards` at index `c`.
-The result is that the first `c` elements
-are moved to the end of the cards.
-
-If `cards` has length `n` the location of
-the cut is a binomial random variable `B(n,1/2)`.
-"""
-function cut!(cards::Vector, c::Int)
-    cards .= vcat(cards[c+1:end], cards[1:c])
-    return nothing
-end
 cut!(cards::Vector) = cut!(cards, simple_binomial(length(cards)))
 cut!(deck::Deck, c::Int) = cut!(deck.cards, c)
 cut!(deck::Deck) = cut!(deck.cards)
