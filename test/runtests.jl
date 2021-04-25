@@ -67,4 +67,11 @@ A♡ 2♡ 3♡ 4♡ 5♡ 6♡ 7♡ 8♡ 9♡ T♡ J♡ Q♡ K♡
 A♢ 2♢ 3♢ 4♢ 5♢ 6♢ 7♢ 8♢ 9♢ T♢ J♢ Q♢ K♢
 "
     @test sprint(show, ordered_deck()) == s
+
+    deck = ordered_deck()
+    five_spades = pop!(deck, 5♠)
+    @test five_spades === 5♠
+    @test length(deck) == 51
+    @test findfirst(x->x==5♠, deck.cards) == nothing
+    @test_throws ErrorException pop!(deck, 5♠)
 end

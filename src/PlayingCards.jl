@@ -224,10 +224,19 @@ end
 
 """
     pop!(deck::Deck, n::Int = 1)
+    pop!(deck::Deck, card::Card)
 
 Remove `n` cards from the `deck`.
+or
+Remove `card` from the `deck`.
 """
 Base.pop!(deck::Deck, n::Integer = 1) = ntuple(i->pop!(deck.cards), n)
+function Base.pop!(deck::Deck, card::Card)
+    L0 = length(deck)
+    filter!(x -> x ≠ card, deck.cards)
+    L0 == length(deck)+1 || error("Could not pop $(card) from deck.")
+    return card
+end
 
 """
     ordered_deck
