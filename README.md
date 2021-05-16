@@ -27,19 +27,13 @@ A package for representing playing cards for card games (for a standard deck of 
 
 ## Cards
 
-A playing `Card` is consists of a rank:
+A playing `Card` is consists of a suit (`♣`,`♠`,`♡`,`♢`) and a rank:
 
  - `Rank(N::Int)` where `1 ≤ N ≤ 13` where
  - `N = 1` represents an Ace (which can have high or low values via `high_value` and `low_value`)
  - `N = 11` represents a Jack
  - `N = 12` represents a Queen
  - `N = 13` represents a King
-
-and a suit:
- - `♣` (`Club`)
- - `♠` (`Spade`)
- - `♡` (`Heart`)
- - `♢` (`Diamond`)
 
 The value of the rank can be retrieved from `high_value` and `low_value`:
 
