@@ -253,7 +253,7 @@ Shuffle the deck! `shuffle!` uses
 """
 function shuffle!(deck::Deck)
     deck.cards .= deck.cards[randperm(length(deck.cards))]
-    nothing
+    deck
 end
 
 end # module
