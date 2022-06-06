@@ -2,6 +2,10 @@ using Test
 using PlayingCards
 using PlayingCards: rank_string
 
+using Random
+
+rng = VERSION >= v"1.7.0" ? Random.Xoshiro(0x0451) : Random.MersenneTwister()
+
 @testset "Ranks" begin
     for v in ranks()
         v==1 && continue
@@ -55,7 +59,7 @@ end
     deck = ordered_deck()
     @test length(deck) == 52
     @test iterate(deck) == iterate(deck.cards)
-    shuffle!(deck)
+    shuffle!(rng, deck)
     cards = pop!(deck, 2)
     @test length(cards)==2
     @test length(deck)==50
