@@ -78,5 +78,9 @@ end
 
 @testset "Allocations" begin
     alloc = @allocated ordered_deck()
-    @test alloc == 304
+    if VERSION >= v"1.7.0"
+        @test alloc == 352
+    else
+        @test alloc == 304
+    end
 end
