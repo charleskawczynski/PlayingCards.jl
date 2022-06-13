@@ -1,8 +1,5 @@
 module PlayingCards
 
-using Random: randperm
-import Random: shuffle!
-
 import Base
 
 # Suits
@@ -18,7 +15,7 @@ export suit, rank, high_value, low_value, color
 export ranks, suits
 
 # Deck & deck-related methods
-export Deck, shuffle!, full_deck, ordered_deck
+export Deck, full_deck, ordered_deck
 
 #####
 ##### Types
@@ -291,15 +288,6 @@ An ordered `Deck` of cards.
 """
 ordered_deck() = Deck(full_deck())
 
-"""
-    shuffle!
-
-Shuffle the deck! `shuffle!` uses
-`Random.randperm` to shuffle the deck.
-"""
-function shuffle!(deck::Deck)
-    deck.cards .= deck.cards[randperm(length(deck.cards))]
-    deck
-end
+include("shuffle.jl")
 
 end # module
