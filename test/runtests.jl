@@ -1,6 +1,7 @@
 using Test
 using PlayingCards
 using PlayingCards: rank_string
+using PlayingCards: MaskedDeck
 
 @testset "Ranks" begin
     for v in ranks()
@@ -83,4 +84,39 @@ end
     else
         @test alloc == 304
     end
+end
+
+@testset "MaskedDeck" begin
+    deck = MaskedDeck()
+    @test length(deck) == 52
+    @test iterate(deck) == iterate(deck.cards)
+    shuffle!(deck)
+    cards = pop!(deck, Val(2))
+    @test length(cards)==2
+    @test length(deck)==50
+    @test length(full_deck())==52
+
+    # Test pop! correctness against regular deck
+    mdeck = MaskedDeck()
+    rdeck = ordered_deck()
+    @test pop!(mdeck) == pop!(rdeck)[1]
+    @test length(mdeck) == length(rdeck)
+    @test pop!(mdeck) == pop!(rdeck)[1]
+    @test length(mdeck) == length(rdeck)
+    @test pop!(mdeck) == pop!(rdeck)[1]
+    @test length(mdeck) == length(rdeck)
+
+    @test pop!(mdeck, Val(3)) == pop!(rdeck, 3)
+    @test length(mdeck) == length(rdeck)
+    @test pop!(mdeck, Val(3)) == pop!(rdeck, 3)
+    @test length(mdeck) == length(rdeck)
+
+    # Allocations
+    pop!(mdeck, Val(2))
+    p_allocated = @allocated pop!(mdeck, Val(2))
+    @test p_allocated == 0
+
+    shuffle!(mdeck)
+    p_allocated = @allocated shuffle!(mdeck)
+    @test p_allocated == 0
 end
