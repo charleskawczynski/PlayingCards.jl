@@ -1,6 +1,7 @@
 module PlayingCards
 
 using Random: randperm, AbstractRNG, default_rng
+import Random
 import Random: shuffle!
 
 import Base
@@ -244,20 +245,13 @@ full_deck() = Card[Card(r,s) for s in suits() for r in ranks()]
 
 #### Deck
 
-"""
-    Deck
+abstract type AbstractDeck end
 
-Deck of cards (backed by a `Vector{Card}`)
-"""
-struct Deck{C <: AbstractVector{<:Card}}
-    cards::C
-end
+Base.length(deck::AbstractDeck) = length(deck.cards)
 
-Base.length(deck::Deck) = length(deck.cards)
+Base.iterate(deck::AbstractDeck, state=1) = Base.iterate(deck.cards, state)
 
-Base.iterate(deck::Deck, state=1) = Base.iterate(deck.cards, state)
-
-function Base.show(io::IO, deck::Deck)
+function Base.show(io::IO, deck::AbstractDeck)
     for (i, card) in enumerate(deck)
         Base.show(io, card)
         if mod(i, 13) == 0
@@ -269,6 +263,15 @@ function Base.show(io::IO, deck::Deck)
 end
 
 """
+    Deck
+
+Deck of cards (backed by a `Vector{Card}`)
+"""
+struct Deck{C <: AbstractVector{<:Card}} <: AbstractDeck
+    cards::C
+end
+
+"""
     pop!(deck::Deck, n::Int = 1)
     pop!(deck::Deck, card::Card)
 
@@ -276,7 +279,9 @@ Remove `n` cards from the `deck`.
 or
 Remove `card` from the `deck`.
 """
-Base.pop!(deck::Deck, n::Integer = 1) = ntuple(i->pop!(deck.cards), n)
+Base.pop!(deck::Deck, n::Integer = 1) = ntuple(i->Base.pop!(deck.cards), n)
+
+# TODO: `pop!` should not return a tuple
 function Base.pop!(deck::Deck, card::Card)
     L0 = length(deck)
     filter!(x -> x ≠ card, deck.cards)
@@ -312,5 +317,7 @@ end
 
 shuffle(deck::Deck) = shuffle!(default_rng(), Deck(copy(deck.cards)))
 shuffle(rng::AbstractRNG, deck::Deck) = shuffle!(rng, Deck(copy(deck.cards)))
+
+include("masked_deck.jl")
 
 end # module
