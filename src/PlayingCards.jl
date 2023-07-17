@@ -1,6 +1,6 @@
 module PlayingCards
 
-using Random: randperm
+using Random: randperm, AbstractRNG, default_rng
 import Random
 import Random: shuffle!
 
@@ -19,7 +19,7 @@ export suit, rank, high_value, low_value, color
 export ranks, suits
 
 # Deck & deck-related methods
-export Deck, shuffle!, full_deck, ordered_deck
+export Deck, shuffle, shuffle!, full_deck, ordered_deck
 
 #####
 ##### Types
@@ -267,7 +267,7 @@ end
 
 Deck of cards (backed by a `Vector{Card}`)
 """
-struct Deck{C <: Vector} <: AbstractDeck
+struct Deck{C <: AbstractVector{<:Card}} <: AbstractDeck
     cards::C
 end
 
@@ -297,15 +297,26 @@ An ordered `Deck` of cards.
 ordered_deck() = Deck(full_deck())
 
 """
+    shuffled_deck
+
+A randomly shuffled `Deck` of 52 cards
+"""
+shuffled_deck(rng::AbstractRNG = default_rng()) = shuffle!(ordered_deck())
+
+"""
     shuffle!
 
-Shuffle the deck! `shuffle!` uses
-`Random.randperm` to shuffle the deck.
+Shuffle the deck! Optionally accepts an `AbstractRNG` to seed the shuffle.
 """
-function shuffle!(deck::Deck)
-    deck.cards .= deck.cards[randperm(length(deck.cards))]
-    deck
+shuffle!(deck::Deck) = shuffle!(default_rng(), deck)
+
+function shuffle!(rng::AbstractRNG, deck::Deck)
+    shuffle!(rng, deck.cards)
+    return deck
 end
+
+shuffle(deck::Deck) = shuffle!(default_rng(), Deck(copy(deck.cards)))
+shuffle(rng::AbstractRNG, deck::Deck) = shuffle!(rng, Deck(copy(deck.cards)))
 
 include("masked_deck.jl")
 
