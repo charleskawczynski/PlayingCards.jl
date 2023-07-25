@@ -24,6 +24,8 @@ end
     @test color(A♡) == :red
     @test color(♢) == :red
     @test color(♡) == :red
+    @test color(🃏♡) == :red
+    @test color(🃏♠) == :black
 end
 
 @testset "Card" begin
@@ -37,7 +39,8 @@ end
     @test suit(A♢) == ♢
     @test suit(A♠) == ♠
     @test_throws ArgumentError 14*♣
-    @test_throws ArgumentError 0*♣
+    @test_throws ArgumentError -1*♣
+    @test suit(🃏♡) == ♡
 end
 
 @testset "strings" begin
@@ -53,6 +56,7 @@ end
     @test string(♠) == "♠"
     @test string(♡) == "♡"
     @test string(♢) == "♢"
+    @test string(🃏♡) == "🃏♡"
     @test_throws AssertionError rank_string(Int8(-1))
 end
 
