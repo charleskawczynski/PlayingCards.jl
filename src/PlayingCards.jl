@@ -74,7 +74,7 @@ Encode a playing card as a 6-bit integer (low bits of a `UInt8`):
 Ranks are assigned as follows:
 - numbered cards (2 to 10) have rank equal to their number
 - jacks, queens and kings have ranks 11, 12 and 13
-- there are low and high aces with ranks 1 and 14
+- there are low and high aces with ranks 1 and 14, 0 is for Joker
 - there are low and high jokers with ranks 0 and 15
 
 This allows any of the standard orderings of cards ranks to be
@@ -86,7 +86,7 @@ represented by `UInt8` values `0x00` through `0x3f`.
 struct Card
     value::UInt8
     function Card(r::Integer, s::Integer)
-        1 ≤ r ≤ 13 || throw(ArgumentError("invalid card rank: $r"))
+        0 ≤ r ≤ 13 || throw(ArgumentError("invalid card rank: $r"))
         left_bits = UInt8(s << 4)
         right_bits = UInt8(r)
         or_bits = left_bits | right_bits
@@ -141,13 +141,17 @@ Base.:*(r::Integer, s::Suit) = Card(r, s)
 
 function Base.show(io::IO, c::Card)
     r = rank(c)
-    @assert 1 ≤ r ≤ 14
+    @assert 0 ≤ r ≤ 14
     if r == 1
         print(io, 'A')
+        print(io, suit(c))
+    elseif r == 0
+        print(io, '🃏')
+        print(io, suit(c))
     else
         print(io, "123456789TJQK"[r])
+        print(io, suit(c))
     end
-    print(io, suit(c))
 end
 
 # And for face cards:
@@ -158,15 +162,21 @@ for s in "♣♢♡♠", (f,typ) in zip((:T,:J,:Q,:K,:A),(10,11,12,13,1))
     ss, sc = Symbol(s), Symbol("$f$s")
     @eval (export $sc; const $sc = Card($typ,$ss))
 end
+# 🃏 &#x1F0CF;
+const 🃏♣ = Card(0, ♣); export 🃏♣
+const 🃏♢ = Card(0, ♢); export 🃏♢
+const 🃏♡ = Card(0, ♡); export 🃏♡
+const 🃏♠ = Card(0, ♠); export 🃏♠
 
 #####
 ##### Methods
 #####
 
 function rank_string(r::Int8)
-    @assert 1 ≤ r ≤ 13
+    @assert 0 ≤ r ≤ 13
     if r ≤ 9
         2 ≤ r && return "$(r)"
+        r == 0 && return "🃏"
         return "A"
     else
         if r < 12
