@@ -1,5 +1,8 @@
 using Test
+using StatsBase
+const SB = StatsBase
 using PlayingCards
+const PC = PlayingCards
 using PlayingCards: rank_string
 using PlayingCards: MaskedDeck
 
@@ -102,6 +105,7 @@ end
     cards = pop!(deck, Val(2))
     @test length(cards)==2
     @test length(deck)==50
+    @test count(deck.mask)==50
     @test length(full_deck())==52
 
     # Test pop! correctness against regular deck
@@ -122,9 +126,29 @@ end
     # Allocations
     pop!(mdeck, Val(2))
     p_allocated = @allocated pop!(mdeck, Val(2))
-    @test p_allocated == 0
+    if VERSION ≥ v"1.7"
+        @test p_allocated == 0
+    end
 
     shuffle!(mdeck)
     p_allocated = @allocated shuffle!(mdeck)
+    @test p_allocated == 0
+
+    mdeck = MaskedDeck()
+    c = SB.sample!(mdeck)
+    @test count(mdeck.mask) == 51
+end
+
+@testset "More MaskedDeck" begin
+    mdeck = MaskedDeck()
+    c = Base.popat!(mdeck, A♡)
+    @test mdeck.mask[findfirst(c->c==A♡, mdeck.cards)] == false
+    PC.restore!(mdeck, A♡)
+    @test count(mdeck.mask) == 52
+
+    amdeck = MaskedDeck()
+    bmdeck = MaskedDeck()
+    Base.copyto!(amdeck, bmdeck)
+    p_allocated = @allocated Base.copyto!(amdeck, bmdeck)
     @test p_allocated == 0
 end

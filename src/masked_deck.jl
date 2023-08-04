@@ -1,3 +1,6 @@
+import StatsBase
+const SB = StatsBase
+
 """
     MaskedDeck()
 
@@ -17,12 +20,13 @@ makes all of the cards available again.
 """
 struct MaskedDeck{T <: Vector} <: AbstractDeck
     cards::T
-    len::Vector{Int}
+    mask::BitVector # cards in deck
 end
-Base.length(deck::MaskedDeck) = deck.len[1]
+Base.length(deck::MaskedDeck) = count(deck.mask)
 function MaskedDeck()
     cards = PlayingCards.full_deck()
-    return MaskedDeck{typeof(cards)}(cards, Int[length(cards)])
+    mask = BitVector(ntuple(_->true, 52))
+    return MaskedDeck{typeof(cards)}(cards, mask)
 end
 
 Base.pop!(deck::MaskedDeck, n::Integer) = Base.pop!(deck, Val(n))
@@ -32,12 +36,51 @@ function Base.pop!(deck::MaskedDeck, ::Val{n})::NTuple{n,Card} where {n}
 end
 
 function Base.pop!(deck::MaskedDeck)::Card
-    @inbounds deck.len[1] -= 1
-    return @inbounds deck.cards[deck.len[1]+1]
+    i = findlast(1:52) do i
+        @inbounds deck.mask[i]
+    end
+    @inbounds deck.mask[i] = false
+    return @inbounds deck.cards[i]
+end
+
+function Base.popat!(deck::MaskedDeck, card::Card)::Card
+    i = findfirst(c->c==card, deck.cards)
+    @assert !isnothing(i)
+    deck.mask[i] = false
+    return deck.cards[i]
+end
+
+function restore!(deck::MaskedDeck, card::Card)
+    i = findfirst(c->c==card, deck.cards)
+    @assert !isnothing(i)
+    @inbounds deck.mask[i] = true
+    return nothing
+end
+
+SB.sample!(deck::MaskedDeck)::Card =
+    SB.sample!(Random.default_rng(), deck)
+
+function SB.sample!(rng, deck::MaskedDeck)::Card
+    @assert any(deck.mask)
+    @inbounds begin
+        while true
+            s = SB.sample(rng, 1:52)
+            if deck.mask[s]
+                deck.mask[s] = false
+                return deck.cards[s]
+            end
+        end
+    end
+end
+
+function Base.copyto!(x::MaskedDeck, y::MaskedDeck)
+    x.cards .= y.cards
+    x.mask .= y.mask
+    x
 end
 
 function reset!(deck::MaskedDeck)
-    @inbounds deck.len[1] = length(deck.cards)
+    deck.mask .= true
     return nothing
 end
 
